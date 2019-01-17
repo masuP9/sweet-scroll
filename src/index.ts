@@ -7,6 +7,7 @@ import { $, findScrollable, matches } from './dom/selectors';
 import { getSize, getViewportAndElementSizes } from './dom/dimensions';
 import { getOffset, getScroll, setScroll, Offset } from './dom/offsets';
 import { addEvent, removeEvent } from './dom/events';
+import { focus } from './dom/focus';
 import { parseCoordinate } from './coordinate';
 import {
   Options,
@@ -269,10 +270,10 @@ export default class SweetScroll {
    */
   /* tslint:disable:no-empty */
   protected onBefore(_: Offset, __: Element | null): boolean | void { return true; }
-  protected onStep(_: number): void {}
-  protected onAfter(_: Offset, __: Element | null): void {}
-  protected onCancel(): void {}
-  protected onComplete(_: boolean): void {}
+  protected onStep(_: number): void { }
+  protected onAfter(_: Offset, __: Element | null): void { }
+  protected onCancel(): void { }
+  protected onComplete(_: boolean): void { }
   /* tslint:enable */
 
   /**
@@ -383,6 +384,14 @@ export default class SweetScroll {
       this.hook(opts, 'cancel');
     } else {
       this.hook(opts, 'after', pos, $trigger);
+    }
+
+    if (hash != null && canUseDOM) {
+      const target = hash === '#' ? $el : document.querySelector(hash);
+
+      if (target != null && target.tagName !== 'svg') {
+        focus(target as HTMLElement);
+      }
     }
 
     this.hook(opts, 'complete', cancel);

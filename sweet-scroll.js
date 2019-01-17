@@ -223,6 +223,17 @@
         apply($el, 'removeEventListener', event, listener, passive);
     };
 
+    var focus = function (el) {
+        if (el.hasAttribute('tabindex')) {
+            el.focus();
+        }
+        else {
+            el.tabIndex = -1;
+            el.focus();
+            el.removeAttribute('tabindex');
+        }
+    };
+
     var reRelativeToken = /^(\+|-)=(\d+(?:\.\d+)?)$/;
     var parseCoordinate = function (coordinate, enableVertical) {
         var res = { top: 0, left: 0, relative: false };
@@ -626,6 +637,12 @@
             }
             else {
                 this.hook(opts, 'after', pos, $trigger);
+            }
+            if (hash != null && canUseDOM) {
+                var target = hash === '#' ? $el : document.querySelector(hash);
+                if (target != null && target.tagName !== 'svg') {
+                    focus(target);
+                }
             }
             this.hook(opts, 'complete', cancel);
         };
